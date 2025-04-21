@@ -7,46 +7,47 @@ on:
 
 jobs:
   deploy:
-    name: Deploy App Engine
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-    - name: Install Angular CLI
-      run: npm install -g @angular/cli
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
-    - name: Install dependencies and build frontend
-      run: |
-        cd frontend
-        npm ci
-        ng build --configuration production
+      - name: Install dependencies & build frontend
+        run: |
+          cd frontend
+          npm ci
+          ng build --configuration production
 
-    - name: Move frontend build to backend/public
-      run: |
-        rm -rf backend/public
-        mkdir -p backend/public
-        cp -r frontend/dist/frontend/* backend/public/
+      - name: Move frontend build into backend/public
+        run: |
+          rm -rf backend/public
+          mkdir -p backend/public
+          cp -r frontend/dist/frontend/* backend/public/
 
-    - name: Set up Google Cloud credentials
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
+      # ← Replace your auth@v2 step with setup-gcloud:
+      - name: Authenticate gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id:        ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: whoami & app describe
-      run: |
-        gcloud auth list
-        gcloud config list project
-        gcloud app describe --format="value(id)" || echo "❌ cannot describe app"
+      - name: Debug - who am I?
+        run: |
+          gcloud auth list
+          gcloud config list project
+          gcloud app describe --format="value(id)" || echo "❌ cannot describe app"
 
-    - name: Deploy to App Engine
-      uses: google-github-actions/deploy-appengine@v2
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        deliverables: backend/app.yaml
+      - name: Deploy to App Engine
+        uses: google-github-actions/deploy-appengine@v2
+        with:
+          project_id:  ${{ secrets.GCP_PROJECT_ID }}
+          deliverables: backend/app.yaml
+          promote:     true
