@@ -1,4 +1,4 @@
-name: Deploy to GCP
+name: Build & Deploy to App Engine
 
 on:
   push:
@@ -6,51 +6,50 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # fail early if any step fails
+        shell: bash
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: 📦 Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+    - name: 🔧 Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
 
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
+    - name: 🚀 Build frontend
+      run: |
+        cd frontend
+        npm ci
+        npx ng build --configuration production
+      # now your built files are in frontend/dist/frontend
 
-      - name: Install dependencies & build frontend
-        run: |
-          cd frontend
-          npm ci
-          ng build --configuration production
+    - name: 📁 Copy frontend → backend/public
+      run: |
+        rm -rf backend/public
+        mkdir -p backend/public
+        cp -r frontend/dist/frontend/* backend/public/
 
-      - name: Move frontend build into backend/public
-        run: |
-          rm -rf backend/public
-          mkdir -p backend/public
-          cp -r frontend/dist/frontend/* backend/public/
+    - name: 🔐 Authenticate to GCP
+      uses: google-github-actions/auth@v1
+      with:
+        # this secret should be the JSON key for a service account
+        # which has roles/appengine.deployer
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+    - name: ☁️ Set up gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Configure gcloud CLI
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id:        ${{ secrets.GCP_PROJECT_ID }}
-
-      - name: Debug - who am I?
-        run: |
-          gcloud auth list
-          gcloud config list project
-          gcloud app describe --format="value(id)" || echo "❌ cannot describe app"
-
-      - name: Deploy to App Engine
-        uses: google-github-actions/deploy-appengine@v2
-        with:
-          project_id:  ${{ secrets.GCP_PROJECT_ID }}
-          deliverables: backend/app.yaml
-          promote:     true
+    - name: 🚩 Deploy to App Engine
+      run: |
+        gcloud app deploy backend/app.yaml \
+          --project="$GCP_PROJECT_ID" \
+          --quiet \
+          --promote
