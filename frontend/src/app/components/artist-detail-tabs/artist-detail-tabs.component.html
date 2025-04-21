@@ -1,0 +1,87 @@
+<div *ngIf="loading" class="text-center my-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && artist">
+  <ul class="nav nav-tabs justify-content-center" role="tablist">
+    <li class="nav-item">
+      <button
+        type="button"
+        class="nav-link"
+        [class.active]="selectedTab === 'info'"
+        (click)="selectTab('info')">
+        Info
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        type="button"
+        class="nav-link"
+        [class.active]="selectedTab === 'artworks'"
+        (click)="selectTab('artworks')">
+        Artworks
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content mt-4">
+    <!-- Info Tab -->
+    <div *ngIf="selectedTab === 'info'">
+      <div class="row">
+        <div class="col-md-3 text-center">
+          <img
+            *ngIf="artist.image_url"
+            [src]="artist.image_url"
+            alt="{{ artist.name }}"
+            class="img-fluid rounded"
+            style="max-height: 200px;"
+          />
+        </div>
+        <div class="col-md-9">
+          <h3 class="mb-1">{{ artist.name }}</h3>
+          <p class="text-muted mb-1">
+            <span *ngIf="artist.nationality">{{ artist.nationality }}</span>
+            <span *ngIf="artist.birthday || artist.deathday">
+              {{ artist.nationality ? ',' : '' }}
+              {{ artist.birthday }}<span *ngIf="artist.deathday"> – {{ artist.deathday }}</span>
+            </span>
+          </p>
+          <div *ngIf="artist.biography" style="white-space: pre-line;">
+            {{ artist.biography }}
+          </div>
+          <div *ngIf="similarArtists.length" class="mt-4">
+            <h5 class="mb-3">Similar Artists</h5>
+            <div class="scroll-container d-flex gap-3 overflow-auto py-2">
+              <div
+                *ngFor="let similar of similarArtists"
+                class="flex-shrink-0"
+                style="width: 200px;">
+                <app-artist-card [artist]="similar" (click)="selectSimilarArtist(similar)"></app-artist-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artworks Tab -->
+    <div *ngIf="selectedTab === 'artworks'">
+      <div *ngIf="artworks.length; else noArtworks" class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col" *ngFor="let artwork of artworks">
+          <app-artwork-card [artwork]="artwork" (viewCategories)="openCategoriesModal(artwork)"></app-artwork-card>
+        </div>
+      </div>
+      <ng-template #noArtworks>
+        <p class="text-center text-muted">No artworks available.</p>
+      </ng-template>
+      <app-categories-modal
+        *ngIf="showCategoriesModal"
+        [artwork]="selectedArtworkForCategories"
+        [isOpen]="showCategoriesModal"
+        (close)="closeCategoriesModal()">
+      </app-categories-modal>
+    </div>
+  </div>
+</div>

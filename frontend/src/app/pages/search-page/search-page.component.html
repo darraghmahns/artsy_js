@@ -1,0 +1,22 @@
+<app-search-form (search)="onSearch($event)"></app-search-form>
+
+<!-- Show spinner only during search loading and no artist is selected -->
+<div class="text-center my-3" *ngIf="loading && !selectedArtistId">
+  <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+</div>
+
+<div class="scroll-container mt-4" *ngIf="results.length">
+  <div class="d-flex flex-row overflow-auto gap-3">
+    <div class="result-card" *ngFor="let artist of results" (click)="selectArtist(artist)" style="cursor: pointer;">
+      <app-artist-card [artist]="artist"></app-artist-card>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4" *ngIf="selectedArtistId && !loading">
+  <app-artist-detail-tabs [artistId]="selectedArtistId"></app-artist-detail-tabs>
+</div>
+
+<div *ngIf="hasSearched && !loading && results.length === 0" class="alert alert-danger w-100 text-start" role="alert">
+  No results.
+</div>

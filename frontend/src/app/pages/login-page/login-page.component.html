@@ -1,0 +1,40 @@
+<h2 class="mb-4">Login</h2>
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate class="card p-4 shadow-sm">
+  <div class="mb-3">
+    <label for="email">Email address</label>
+    <input
+      id="email"
+      type="email"
+      class="form-control"
+      [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+      formControlName="email"
+    />
+    <div class="invalid-feedback" *ngIf="form.get('email')?.errors?.['required']">
+      Email is required.
+    </div>
+    <div class="invalid-feedback" *ngIf="form.get('email')?.errors?.['email']">
+      Email must be valid.
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      class="form-control"
+      [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+      formControlName="password"
+    />
+    <div class="invalid-feedback" *ngIf="form.get('password')?.errors?.['required']">
+      Password is required.
+    </div>
+  </div>
+
+  <button class="btn btn-primary w-100" type="submit" [disabled]="form.invalid">Login</button>
+</form>
+
+<p class="text-center mt-3">
+  Don't have an account?
+  <a href="/register" routerLinkActive="active" class="text-decoration-underline">Register</a>
+</p>

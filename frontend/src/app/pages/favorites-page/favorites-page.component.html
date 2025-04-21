@@ -1,0 +1,34 @@
+<div *ngIf="loading" class="text-center my-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && favorites.length" class="row g-4">
+  <div class="col-md-4" *ngFor="let artist of favorites">
+    <div class="favorite-card" [style.backgroundImage]="'url(' + (artist._links?.thumbnail?.href || '') + ')'">
+      <div class="overlay">
+        <h5>{{ artist.name || '' }}</h5>
+
+        <!-- Birth and death -->
+        <p>
+          {{ artist.birthday || '' }}
+          <span>– {{ artist.deathday || '' }}</span>
+        </p>
+
+        <!-- Nationality -->
+        <p>{{ artist.nationality || '' }}</p>
+
+        <!-- Relative time -->
+        <p class="text-light fst-italic">{{ getRelativeTime(artist.addedAt) }}</p>
+
+        <!-- Remove button -->
+        <a (click)="removeFromFavorites(artist.id)" class="btn btn-link text-white p-0">Remove</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading && favorites.length === 0" class="alert alert-danger w-100 text-start" role="alert">
+  No favorites yet.
+</div>

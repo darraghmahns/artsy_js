@@ -1,0 +1,25 @@
+<div class="card h-100 position-relative">
+  <button
+    *ngIf="isLoggedIn"
+    type="button"
+    class="btn position-absolute top-0 end-0 m-2 p-1"
+    (click)="toggleFavorite()"
+    [attr.aria-label]="isFavorite() ? 'Unfavorite' : 'Favorite'"
+    style="background: none; border: none; font-size: 1.25rem;">
+    <span
+      [innerHTML]="isFavorite() ? '★' : '☆'"
+      [class.text-warning]="isFavorite()"
+      class="favorite-icon">
+    </span>
+  </button>
+
+  <img
+    [src]="artist._links?.thumbnail?.href"
+    (error)="onImageError($event)"
+    class="card-img-top"
+    alt="{{ artist.name || artist.title }}">
+
+  <div class="bg-primary text-white text-center py-2" style="background-color: #205375 !important;">
+    {{ artist.name || artist.title || 'Untitled Artist' }}
+  </div>
+</div>

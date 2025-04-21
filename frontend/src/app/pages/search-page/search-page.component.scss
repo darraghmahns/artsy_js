@@ -1,0 +1,14 @@
+.result-card {
+    flex: 0 0 auto;
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.scrollable-cards {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    // padding-bottom: 1rem;
+}

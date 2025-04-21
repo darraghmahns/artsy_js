@@ -1,0 +1,13 @@
+<div class="d-flex gap-2" style="padding-bottom: 1rem;">
+  <input
+    type="text"
+    class="form-control"
+    [formControl]="query"
+    (keydown.enter)="submitFromKey($event)"
+    placeholder="Please enter an artist name."
+    autocomplete="off"
+    required
+  />
+  <button type="button" class="btn btn-primary" (click)="submit()">Search</button>
+  <button type="button" class="btn btn-secondary" (click)="clear()">Clear</button>
+</div>

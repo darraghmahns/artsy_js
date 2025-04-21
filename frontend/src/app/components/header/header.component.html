@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
+  <a class="navbar-brand fw-bold" routerLink="/">Artist Search</a>
+
+  <!-- Toggler button (hamburger) for mobile view -->
+  <button
+    class="navbar-toggler"
+    type="button"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="mobileMenuOpen"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse justify-content-end" [class.show]="mobileMenuOpen">
+    <ul class="navbar-nav align-items-center">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/" (click)="closeMobileMenu()">Search</a>
+      </li>
+
+      <ng-container *ngIf="user$ | async as user; else guestLinks">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/favorites" (click)="closeMobileMenu()">Favorites</a>
+        </li>
+        <li class="nav-item dropdown" [class.show]="dropdownOpen">
+          <a
+            class="nav-link dropdown-toggle d-flex align-items-center"
+            href="#"
+            role="button"
+            (click)="toggleDropdown()"
+            [attr.aria-expanded]="dropdownOpen"
+          >
+            <img [src]="user.profileImageUrl" alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
+            <span>{{ user.fullname }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" [class.show]="dropdownOpen">
+            <li><a class="dropdown-item text-danger" (click)="deleteAccount()">Delete account</a></li>
+            <li><a class="dropdown-item" (click)="logout()">Log out</a></li>
+          </ul>
+        </li>
+      </ng-container>
+
+      <ng-template #guestLinks>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login" (click)="closeMobileMenu()">Log In</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/register" (click)="closeMobileMenu()">Register</a>
+        </li>
+      </ng-template>
+    </ul>
+  </div>
+</nav>
