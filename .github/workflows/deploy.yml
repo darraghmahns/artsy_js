@@ -50,6 +50,6 @@ jobs:
     - name: 🚩 Deploy to App Engine
       run: |
         gcloud app deploy backend/app.yaml \
-          --project="$GCP_PROJECT_ID" \
+          --project="${{ secrets.GCP_PROJECT_ID }}" \
           --quiet \
           --promote
