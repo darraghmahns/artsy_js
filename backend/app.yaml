@@ -1,0 +1,18 @@
+runtime: nodejs20
+instance_class: F1
+env: standard
+
+handlers:
+  # Route all API calls to the Node server
+  - url: /api/.*
+    script: auto
+
+  # Serve all static frontend assets (Angular build files)
+  - url: /(.*\.(js|css|png|jpg|svg|ico|woff|woff2|ttf|eot|json|html))
+    static_files: public/\1
+    upload: public/.*\.(js|css|png|jpg|svg|ico|woff|woff2|ttf|eot|json|html)
+
+  # Catch-all route: Serve index.html for Angular SPA routing
+  - url: /.*
+    static_files: public/index.html
+    upload: public/index.html
