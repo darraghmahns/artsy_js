@@ -1,0 +1,6 @@
+# don’t send your own modules or front‑end source up
+frontend/
+backend/node_modules/
+node_modules/
+.git/
+.github/
