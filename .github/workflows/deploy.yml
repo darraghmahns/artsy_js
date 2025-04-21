@@ -39,6 +39,12 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+    - name: whoami & app describe
+      run: |
+        gcloud auth list
+        gcloud config list project
+        gcloud app describe --format="value(id)" || echo "❌ cannot describe app"
+
     - name: Deploy to App Engine
       uses: google-github-actions/deploy-appengine@v2
       with:
